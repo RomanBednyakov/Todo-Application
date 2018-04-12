@@ -84,6 +84,11 @@ function TodoApplicationModel() {
         }
     };
 
+    // this.changeTextTask = function (e) {
+    //     console.log('##',e);
+    //     e.innerText = '';
+    // };
+
     this.count = function (lenghtList) {
         countTasks.innerText = 'Count :' + lenghtList; // >>^^^^!!!
         // countTasks.appendChild(document.createTextNode('Count :' + lenghtList));
@@ -111,7 +116,7 @@ function TodoApplicationModel() {
             });
         } else {
         todoList.splice(0);
-        todoActions.count(todoList.length);
+        todoModel.count(todoList.length);
         let arr = document.querySelectorAll('ul > li');
         arr.forEach(function (item) {
             listTasks.removeChild(item);
@@ -141,7 +146,7 @@ function TodoApplicationModel() {
     }
 
 }
-let todoActions = new TodoApplicationModel();
+let todoModel = new TodoApplicationModel();
 
 function TodoApplicationView() {
 
@@ -178,6 +183,7 @@ function TodoApplicationView() {
        newCheckbox.setAttribute('class', newObjTask.id);
        newCheckbox.checked = newObjTask.isCompleted;
        newButton.setAttribute('class', newObjTask.id);
+       newText.setAttribute('class', newObjTask.id);
 
        newText.appendChild(textLi);
        newButton.appendChild(textButton);
@@ -196,14 +202,14 @@ if (localStorage.getItem('todo') !== undefined) {
         todoView.addedTasks(item);
     })
 }
-todoActions.count(todoList.length);
+todoModel.count(todoList.length);
 
 button_added_js.addEventListener('click', function  () {
     if (newTask.value !== '') {
-        let newObjTask = todoActions.newTask(newTask.value);
+        let newObjTask = todoModel.newTask(newTask.value);
         todoList.push(newObjTask);
         todoView.addedTasks(newObjTask);
-        todoActions.count(todoList.length);
+        todoModel.count(todoList.length);
         updateStorage.storage(todoList);
         newTask.value = '';
     }
@@ -211,30 +217,34 @@ button_added_js.addEventListener('click', function  () {
 
 listTasks.addEventListener('click', function  (e) {
     if (e.target.nodeName === 'BUTTON') {
-        console.log('##',e);
-        todoActions.deleteTask(e);
-        todoActions.count(todoList.length);
+        todoModel.deleteTask(e);
+        todoModel.count(todoList.length);
+
     } else if (e.target.nodeName === 'INPUT') {
-        todoActions.changeCompleted(e);
+        todoModel.changeCompleted(e);
+
     }
+    // else if (e.target.nodeName === 'P') {
+    //     todoModel.changeTextTask(e)
+    // }
 });
 
 checkAllTasks.addEventListener('click', function  () {
-    todoActions.checkAllTasks();
+    todoModel.checkAllTasks();
 });
 
 deleteAllTasks.addEventListener('click', function  () {
-    todoActions.deleteAllTasks();
+    todoModel.deleteAllTasks();
 });
 
 allTasks.addEventListener('click', function  () {
-    todoActions.addedListTasks(todoList, 'All')
+    todoModel.addedListTasks(todoList, 'All')
 });
 
 completeTasks.addEventListener('click', function  () {
-    todoActions.addedListTasks(todoList, 'Complete')
+    todoModel.addedListTasks(todoList, 'Complete')
 });
 
 activeTasks.addEventListener('click', function  () {
-    todoActions.addedListTasks(todoList, 'Active')
+    todoModel.addedListTasks(todoList, 'Active')
 });
