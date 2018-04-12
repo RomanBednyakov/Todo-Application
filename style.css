@@ -24,4 +24,7 @@ li input, li button {
 .task_text_js {
     min-width: 400px;
 }
-
+.count_tasks_js {
+    content: '';
+    display: inline-block;
+}
