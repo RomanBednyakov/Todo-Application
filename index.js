@@ -4,7 +4,6 @@ let newTask = document.querySelector('.task_text_js');
 let listTasks = document.querySelector('.list_tasks_js');
 let deleteAllTasks = document.querySelector('.delete_all_tasks_js');
 let checkAllTasks = document.querySelector('.check_all_tasks_js');
-
 let countTasks = document.querySelector('.count_tasks_js');
 let activeTasks = document.querySelector('.active_tasks_js');
 let completeTasks = document.querySelector('.complete_tasks_js');
@@ -17,56 +16,37 @@ function UpdateLocalStorage() {
 }
 let updateStorage = new UpdateLocalStorage();
 
-function State() {
+function TodoApplicationConstructor() {
+
     this.stateCheckbox = true;
-
-}
-let state = new State;
-
-function SearchIndexTask () {
-    this.indexTask = function (e) {
-        let id = Number(e.target.className);
-        let index = 0;
-        todoList.forEach(function(item, i) {
-            if (item.id === id) {
-                index = i
-            }
-        });
-        return index
-    }
-}
-let indexTask = new SearchIndexTask();
-
-function TodoApplicationModel() {
 
     this.addedListTasks = function (list, flag) {
         if (flag === 'All'){
             this.deleteAllTasks(true);
             list.forEach(function (item) {
-                todoView.addedTasks(item)
+                todoView.addedTasks(item);
             });
             this.count(list.length);
-
         } else if (flag === 'Complete') {
             this.deleteAllTasks(true);
-            let filteredList = list.filter(function (i) {
-                return i.isCompleted === true
-            });
-            filteredList.forEach(function (item) {
-                todoView.addedTasks(item)
+            let filteredList = [];
+            list.forEach(function (item ,i) {
+                if (item.isCompleted === true) {
+                    filteredList.push(item);
+                    todoView.addedTasks(item)
+                }
             });
             this.count(filteredList.length);
-
         } else if (flag === 'Active') {
             this.deleteAllTasks(true);
-            let filteredList = list.filter(function (i) {
-                return i.isCompleted === false
-            });
-            filteredList.forEach(function (item) {
-                todoView.addedTasks(item)
+            let filteredList = [];
+            list.forEach(function (item ,i) {
+                if (item.isCompleted === false) {
+                    filteredList.push(item);
+                    todoView.addedTasks(item)
+                }
             });
             this.count(filteredList.length);
-
         } else {
             list.forEach(function (item) {
                todoView.addedTasks(item);
@@ -89,20 +69,30 @@ function TodoApplicationModel() {
     //     e.innerText = '';
     // };
 
-    this.count = function (lenghtList) {
-        countTasks.innerText = 'Count :' + lenghtList; // >>^^^^!!!
-        // countTasks.appendChild(document.createTextNode('Count :' + lenghtList));
+    this.count = function (lenghList) {
+        countTasks.textContent = 'Count :' + lenghList;
     };
 
+    this.indexTask = function (e) {
+        let id = Number(e.target.className);
+        let index = 0;
+        todoList.forEach(function(item, i) {
+            if (item.id === id) {
+                index = i
+            }
+        });
+        return index
+    }
+
     this.changeCompleted = function (e) {
-        let index = indexTask.indexTask(e);
+        let index = this.indexTask(e);
         todoList[index].isCompleted = !todoList[index].isCompleted;
         todoView.changeStateCheckbox(e.target.parentNode, todoList[index].isCompleted);
         updateStorage.storage(todoList);
     };
 
     this.deleteTask = function (e) {
-        let index = indexTask.indexTask(e);
+        let index = this.indexTask(e);
         todoView.deleteTaskView(e);
         todoList.splice(index,1);
         updateStorage.storage(todoList);
@@ -128,25 +118,26 @@ function TodoApplicationModel() {
     this.checkAllTasks = function () {
         let allTasks = document.querySelectorAll('ul > li > p');
         let allCheckbox = document.querySelectorAll('ul > li > input');
+        let _this = this;
 
         todoList.forEach(function (item, i) {
-            item.isCompleted = state.stateCheckbox;
+            item.isCompleted = _this.stateCheckbox;
         });
 
         allTasks.forEach(function (item) {
-            todoView.changeStateCheckbox(item, state.stateCheckbox);
+            todoView.changeStateCheckbox(item, _this.stateCheckbox);
         });
 
         allCheckbox.forEach(function (item) {
-            todoView.changeViewCheckbox(item, state.stateCheckbox);
+            todoView.changeViewCheckbox(item, _this.stateCheckbox);
         });
         updateStorage.storage(todoList);
 
-        state.stateCheckbox = !state.stateCheckbox;
+        this.stateCheckbox = !this.stateCheckbox;
     }
 
 }
-let todoModel = new TodoApplicationModel();
+let todoModel = new TodoApplicationConstructor();
 
 function TodoApplicationView() {
 
@@ -177,13 +168,15 @@ function TodoApplicationView() {
 
        if (newObjTask.isCompleted) {
            this.changeStateCheckbox(newText,newObjTask.isCompleted);
+           newText.setAttribute('class', newObjTask.id + ' ' + 'active');
+       } else {
+           newText.setAttribute('class', newObjTask.id);
        }
 
        newCheckbox.setAttribute('type', 'checkbox');
        newCheckbox.setAttribute('class', newObjTask.id);
        newCheckbox.checked = newObjTask.isCompleted;
        newButton.setAttribute('class', newObjTask.id);
-       newText.setAttribute('class', newObjTask.id);
 
        newText.appendChild(textLi);
        newButton.appendChild(textButton);
