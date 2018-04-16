@@ -1,13 +1,13 @@
 let todoList = [];
-let button_added_js = document.querySelector('.button_added_js');
-let newTask = document.querySelector('.task_text_js');
-let listTasks = document.querySelector('.list_tasks_js');
-let deleteAllTasks = document.querySelector('.delete_all_tasks_js');
-let checkAllTasks = document.querySelector('.check_all_tasks_js');
-let countTasks = document.querySelector('.count_tasks_js');
-let activeTasks = document.querySelector('.active_tasks_js');
-let completeTasks = document.querySelector('.complete_tasks_js');
-let allTasks = document.querySelector('.all_tasks_js');
+    // button_added_js = document.querySelector('.button_added_js'),
+    // newTask = document.querySelector('.task_text_js'),
+    // listTasks = document.querySelector('.list_tasks_js'),
+    // deleteAllTasks = document.querySelector('.delete_all_tasks_js'),
+    // checkAllTasks = document.querySelector('.check_all_tasks_js'),
+    // countTasks = document.querySelector('.count_tasks_js'),
+    // activeTasks = document.querySelector('.active_tasks_js'),
+    // completeTasks = document.querySelector('.complete_tasks_js'),
+    // allTasks = document.querySelector('.all_tasks_js');
 
 function UpdateLocalStorage() {
     this.storage = function (todoList) {
@@ -16,42 +16,41 @@ function UpdateLocalStorage() {
 }
 let updateStorage = new UpdateLocalStorage();
 
+function SearchElemInDom() {
+    this.button_added_js = document.querySelector('.button_added_js');
+    this.newTask = document.querySelector('.task_text_js');
+    this.listTasks = document.querySelector('.list_tasks_js');
+    this.deleteAllTasks = document.querySelector('.delete_all_tasks_js');
+    this.checkAllTasks = document.querySelector('.check_all_tasks_js');
+    this.countTasks = document.querySelector('.count_tasks_js');
+    this.activeTasks = document.querySelector('.active_tasks_js');
+    this.completeTasks = document.querySelector('.complete_tasks_js');
+    this.allTasks = document.querySelector('.all_tasks_js');
+}
+let searchElem = new SearchElemInDom();
+
 function TodoApplicationConstructor() {
 
     this.stateCheckbox = true;
 
-    this.addedListTasks = function (list, flag) {
-        if (flag === 'All'){
+    this.addedListTasks = function (list, flag, state) {
+        if (state) {
             this.deleteAllTasks(true);
+            let filteredList = [];
             list.forEach(function (item) {
-                todoView.addedTasks(item);
-            });
-            this.count(list.length);
-        } else if (flag === 'Complete') {
-            this.deleteAllTasks(true);
-            let filteredList = [];
-            list.forEach(function (item ,i) {
-                if (item.isCompleted === true) {
-                    filteredList.push(item);
-                    todoView.addedTasks(item)
+                if ( item.isCompleted === flag ){
+                    filteredList.push(todoView.addedTasks(item, true));
                 }
             });
-            this.count(filteredList.length);
-        } else if (flag === 'Active') {
-            this.deleteAllTasks(true);
-            let filteredList = [];
-            list.forEach(function (item ,i) {
-                if (item.isCompleted === false) {
-                    filteredList.push(item);
-                    todoView.addedTasks(item)
-                }
-            });
+            todoView.renderAllTasks(filteredList);
             this.count(filteredList.length);
         } else {
-            list.forEach(function (item) {
-               todoView.addedTasks(item);
-            })
-
+            flag ? this.deleteAllTasks(true) : '';
+            let filteredList = list.map(function (item) {
+                return todoView.addedTasks(item, true);
+            });
+            todoView.renderAllTasks(filteredList);
+            this.count(list.length);
         }
     };
 
@@ -70,7 +69,7 @@ function TodoApplicationConstructor() {
     // };
 
     this.count = function (lenghList) {
-        countTasks.textContent = 'Count :' + lenghList;
+        searchElem.countTasks.textContent = 'Count :' + lenghList;
     };
 
     this.indexTask = function (e) {
@@ -102,21 +101,21 @@ function TodoApplicationConstructor() {
         if (flag) {
             let arr = document.querySelectorAll('ul > li');
             arr.forEach(function (item) {
-                listTasks.removeChild(item);
+                searchElem.listTasks.removeChild(item);
             });
         } else {
         todoList.splice(0);
         todoModel.count(todoList.length);
         let arr = document.querySelectorAll('ul > li');
         arr.forEach(function (item) {
-            listTasks.removeChild(item);
+            searchElem.listTasks.removeChild(item);
         });
         updateStorage.storage(todoList)
         }
     };
 
     this.checkAllTasks = function () {
-        let allTasks = document.querySelectorAll('ul > li > p');
+        let allTasks = document.querySelectorAll('ul > li');
         let allCheckbox = document.querySelectorAll('ul > li > input');
         let _this = this;
 
@@ -142,7 +141,7 @@ let todoModel = new TodoApplicationConstructor();
 function TodoApplicationView() {
 
     this.deleteTaskView = function (e) {
-        listTasks.removeChild(e.target.parentNode);
+        searchElem.listTasks.removeChild(e.target.parentNode);
     };
 
     this.changeStateCheckbox = function (taskText, state) {
@@ -157,7 +156,15 @@ function TodoApplicationView() {
          checkbox.checked = state;
     };
 
-    this.addedTasks = function (newObjTask) {
+    this.renderAllTasks = function (list) {
+        let fragment = document.createDocumentFragment();
+        list.forEach(function (item) {
+            fragment.appendChild(item);
+        });
+        searchElem.listTasks.appendChild(fragment);
+    };
+
+    this.addedTasks = function (newObjTask, flag) {
        let newLi = document.createElement('li');
        let newText = document.createElement('p');
        let newButton = document.createElement('button');
@@ -167,24 +174,27 @@ function TodoApplicationView() {
        let textButton = document.createTextNode('delete');
 
        if (newObjTask.isCompleted) {
-           this.changeStateCheckbox(newText,newObjTask.isCompleted);
-           newText.setAttribute('class', newObjTask.id + ' ' + 'active');
-       } else {
-           newText.setAttribute('class', newObjTask.id);
+           this.changeStateCheckbox(newLi, newObjTask.isCompleted);
+           newLi.setAttribute('class','active');
        }
 
        newCheckbox.setAttribute('type', 'checkbox');
        newCheckbox.setAttribute('class', newObjTask.id);
        newCheckbox.checked = newObjTask.isCompleted;
+       newText.setAttribute('class', newObjTask.id);
        newButton.setAttribute('class', newObjTask.id);
 
        newText.appendChild(textLi);
        newButton.appendChild(textButton);
 
-       listTasks.insertBefore(newLi, listTasks.children[0]);
        newLi.appendChild(newCheckbox);
        newLi.appendChild(newText);
        newLi.appendChild(newButton);
+       if (flag) {
+          return newLi
+       } else {
+           searchElem.listTasks.insertBefore(newLi, searchElem.listTasks.children[0]);
+       }
     }
 }
 let todoView = new TodoApplicationView();
@@ -197,18 +207,18 @@ if (localStorage.getItem('todo') !== undefined) {
 }
 todoModel.count(todoList.length);
 
-button_added_js.addEventListener('click', function  () {
-    if (newTask.value !== '') {
-        let newObjTask = todoModel.newTask(newTask.value);
+searchElem.button_added_js.addEventListener('click', function  () {
+    if (searchElem.newTask.value !== '') {
+        let newObjTask = todoModel.newTask(searchElem.newTask.value);
         todoList.push(newObjTask);
         todoView.addedTasks(newObjTask);
         todoModel.count(todoList.length);
         updateStorage.storage(todoList);
-        newTask.value = '';
+        searchElem.newTask.value = '';
     }
 });
 
-listTasks.addEventListener('click', function  (e) {
+searchElem.listTasks.addEventListener('click', function  (e) {
     if (e.target.nodeName === 'BUTTON') {
         todoModel.deleteTask(e);
         todoModel.count(todoList.length);
@@ -222,22 +232,22 @@ listTasks.addEventListener('click', function  (e) {
     // }
 });
 
-checkAllTasks.addEventListener('click', function  () {
+searchElem.checkAllTasks.addEventListener('click', function  () {
     todoModel.checkAllTasks();
 });
 
-deleteAllTasks.addEventListener('click', function  () {
+searchElem.deleteAllTasks.addEventListener('click', function  () {
     todoModel.deleteAllTasks();
 });
 
-allTasks.addEventListener('click', function  () {
-    todoModel.addedListTasks(todoList, 'All')
+searchElem.allTasks.addEventListener('click', function  () {
+    todoModel.addedListTasks(todoList, true, false)
 });
 
-completeTasks.addEventListener('click', function  () {
-    todoModel.addedListTasks(todoList, 'Complete')
+searchElem.completeTasks.addEventListener('click', function  () {
+    todoModel.addedListTasks(todoList, true, true)
 });
 
-activeTasks.addEventListener('click', function  () {
-    todoModel.addedListTasks(todoList, 'Active')
+searchElem.activeTasks.addEventListener('click', function  () {
+    todoModel.addedListTasks(todoList, false, true)
 });

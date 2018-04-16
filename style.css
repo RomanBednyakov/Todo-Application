@@ -46,6 +46,7 @@ h1 {
 .actions {
     display: flex;
 }
+
 .active {
     text-decoration: line-through;
 }
