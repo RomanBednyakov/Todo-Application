@@ -76,3 +76,6 @@ h1 {
     content: '';
     display: inline-block;
 }
+.footer button {
+    font-size: 20px;
+}
