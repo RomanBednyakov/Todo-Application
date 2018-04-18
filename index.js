@@ -1,4 +1,6 @@
 let todoList = [];
+let numberPerPage = 2;
+let startPage = 0;
 
 function UpdateLocalStorage() {
     this.storage = function (todoList) {
@@ -17,8 +19,62 @@ function SearchElemInDom() {
     this.activeTasks = document.querySelector('.active_tasks_js');
     this.completeTasks = document.querySelector('.complete_tasks_js');
     this.allTasks = document.querySelector('.all_tasks_js');
+    this.paginate = document.querySelector('.paginate_js');
 }
 let searchElem = new SearchElemInDom();
+
+function PaginationList() {
+
+    this.count = function (list, flag) {
+        if (flag) {
+            this.filterTodoList(todoList, startPage);
+        }
+        let number = Math.ceil(list.length / numberPerPage);
+        let arrLink = [];
+        if (number > 1) {
+            for (let page = 0; page < number; page++) {
+                arrLink.push(page)
+            }
+        }
+        this.renderPaginate(arrLink);
+    };
+    this.startProject = function (list) {
+        if (list.length > numberPerPage) {
+           let fistElem = document.querySelectorAll('.paginate_js > a')[0];
+           fistElem.classList.add('class', 'ActiveTarget');
+        }
+    };
+
+    this.deleteAllLink = function () {
+        let arr = document.querySelectorAll('.paginate_js > a');
+        arr.forEach(function (item) {
+            searchElem.paginate.removeChild(item);
+        });
+    };
+
+    this.removeClassLinkPaginate = function (target) {
+        let arr = document.querySelectorAll('.paginate_js > a');
+        arr.forEach(function (item) {
+            item.classList.remove('ActiveTarget');
+        });
+        target.classList.add('class', 'ActiveTarget');
+    };
+
+    this.renderPaginate = function (arrLink) {
+        this.deleteAllLink(true);
+        let filteredList = arrLink.map(function (item) {
+            return todoView.addedLinkPaginate(item);
+        });
+        todoView.renderAllLinkPaginate(filteredList);
+    };
+
+    this.filterTodoList = function (list, count) {
+        let stepCount = count * 2;
+        let newArr = list.slice(stepCount, stepCount === 0 ? 2 : stepCount + 2);
+        todoConstructor.addedListTasks(newArr, true, false);
+    };
+}
+let paginate = new PaginationList();
 
 function TodoApplicationConstructor() {
 
@@ -28,11 +84,15 @@ function TodoApplicationConstructor() {
         if (state) {
             this.deleteAllTasks(true);
             let filteredList = [];
+            let filteredListPaginate = [];
             list.forEach(function (item) {
                 if ( item.isCompleted === flag ){
                     filteredList.push(todoView.addedTasks(item, true));
+                    filteredListPaginate.push(item)
                 }
             });
+            paginate.count(filteredListPaginate);
+            paginate.startProject(filteredListPaginate);
             todoView.renderAllTasks(filteredList);
             this.count(filteredList.length);
         } else {
@@ -101,6 +161,10 @@ function TodoApplicationConstructor() {
         arr.forEach(function (item) {
             searchElem.listTasks.removeChild(item);
         });
+        let arrPaginate = document.querySelectorAll('.paginate_js > a');
+        arrPaginate.forEach(function (item) {
+            searchElem.paginate.removeChild(item);
+        });
         updateStorage.storage(todoList)
         }
     };
@@ -155,6 +219,22 @@ function TodoApplicationView() {
         searchElem.listTasks.appendChild(fragment);
     };
 
+    this.renderAllLinkPaginate = function (list) {
+        let fragment = document.createDocumentFragment();
+        list.forEach(function (item) {
+            fragment.appendChild(item);
+        });
+        searchElem.paginate.appendChild(fragment);
+    };
+
+    this.addedLinkPaginate = function (index) {
+        let link = document.createElement('a');
+        let textLink = document.createTextNode(index);
+        link.appendChild(textLink);
+        link.dataset.id = index;
+        return link;
+    };
+
     this.addedTasks = function (newObjTask, flag) {
        let newLi = document.createElement('li');
        let newText = document.createElement('p');
@@ -192,18 +272,21 @@ let todoView = new TodoApplicationView();
 
 if (localStorage.getItem('todo') !== undefined) {
     todoList = JSON.parse(localStorage.getItem('todo'));
-    todoList.forEach(function (item, i) {
-        todoView.addedTasks(item);
-    })
+    paginate.count(todoList, true);
+    paginate.startProject(todoList);
 }
-todoConstructor.count(todoList.length);
 
 searchElem.button_added_js.addEventListener('click', function  () {
     if (searchElem.newTask.value !== '') {
         let newObjTask = todoConstructor.newTask(searchElem.newTask.value);
         todoList.push(newObjTask);
-        todoView.addedTasks(newObjTask);
-        todoConstructor.count(todoList.length);
+        if (todoList.length <= numberPerPage) {
+            todoView.addedTasks(newObjTask);
+            todoConstructor.count(todoList.length);
+        } else {
+            paginate.count(todoList);
+            paginate.startProject(todoList);
+        }
         updateStorage.storage(todoList);
         searchElem.newTask.value = '';
     }
@@ -232,7 +315,9 @@ searchElem.deleteAllTasks.addEventListener('click', function  () {
 });
 
 searchElem.allTasks.addEventListener('click', function  () {
-    todoConstructor.addedListTasks(todoList, true, false)
+    paginate.count(todoList, true);
+    paginate.startProject(todoList);
+    // todoConstructor.addedListTasks(todoList, true, false)
 });
 
 searchElem.completeTasks.addEventListener('click', function  () {
@@ -241,4 +326,12 @@ searchElem.completeTasks.addEventListener('click', function  () {
 
 searchElem.activeTasks.addEventListener('click', function  () {
     todoConstructor.addedListTasks(todoList, false, true)
+});
+
+searchElem.paginate.addEventListener('click', function  (e) {
+
+    if (e.target.dataset.id) {
+        paginate.removeClassLinkPaginate(e.target);
+        paginate.filterTodoList(todoList, e.target.dataset.id)
+    }
 });

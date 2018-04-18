@@ -79,3 +79,12 @@ h1 {
 .footer button {
     font-size: 20px;
 }
+.paginate_js a {
+    font-size: 25px;
+    margin: 5px;
+    cursor: pointer;
+    color: chocolate;
+}
+.ActiveTarget {
+    color: white!important;
+}
