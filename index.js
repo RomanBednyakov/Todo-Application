@@ -269,12 +269,12 @@ function TodoApplicationView() {
     }
 }
 let todoView = new TodoApplicationView();
-
-if (localStorage.getItem('todo') !== undefined) {
+if (localStorage.getItem('todo') !== null) {
     todoList = JSON.parse(localStorage.getItem('todo'));
     paginate.count(todoList, true);
     paginate.startProject(todoList);
 }
+
 
 searchElem.button_added_js.addEventListener('click', function  () {
     if (searchElem.newTask.value !== '') {
