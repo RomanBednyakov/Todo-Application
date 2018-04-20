@@ -11,6 +11,7 @@ elementInDom.blockController.addEventListener('click', function  (e) {
                 addNewTask.addTask();
             }
             break;
+
         case 'delete_all_tasks_js':
             deleteAllTask.removeAllTask();
             break;
@@ -26,15 +27,19 @@ elementInDom.blockController.addEventListener('click', function  (e) {
         case 'link_paginate_js':
             paginate.controllerLink(e);
             break;
+
         case 'check_all_tasks_js':
             changeCheckboxState.changeAllState();
             break;
+
         case 'all_tasks_js':
             filterAllTask.filterAll();
             break;
+
         case 'active_tasks_js':
             filterActiveCompletedTask.filterActiveAndCompleted(false);
             break;
+
         case 'complete_tasks_js':
             filterActiveCompletedTask.filterActiveAndCompleted(true);
             break;
