@@ -24,7 +24,7 @@ li {
     color: #555;
     background-color: #fff;
     background-image: none;
-    border: 1px solid #ccc;
+    border: 1px solid transparent;
     border-radius: 4px;
 }
 li input, li button {
@@ -48,7 +48,13 @@ h1 {
 }
 
 .active {
+    background: red;
+}
+.active p {
     text-decoration: line-through;
+}
+#activeFilter {
+    background: burlywood;
 }
 .section {
     display: flex;
@@ -70,21 +76,25 @@ h1 {
     /*border-radius: 4px;*/
 }
 .footer {
-    margin-top: 30px;
+    display: flex;
+    width: 100%;
 }
 .count_tasks_js {
     content: '';
     display: inline-block;
+    font-size: 20px;
 }
 .footer button {
     font-size: 20px;
+    flex: 1;
+    margin: 10px 10px;
 }
 .paginate_js a {
     font-size: 25px;
-    margin: 5px;
+    margin: 15px 5px;
     cursor: pointer;
     color: chocolate;
 }
-.ActiveTarget {
+#activeTarget {
     color: white!important;
 }

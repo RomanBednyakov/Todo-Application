@@ -6,15 +6,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<section class="section">
-    <!--<div id="test"></div>-->
+<section class="section blockController_js">
     <h1 class="h1">Todo-application</h1>
-    <!--<div>-->
-        <!--<input type="button" id="first" onclick="firstPage()" value="first" />-->
-        <!--<input type="button" id="next" onclick="nextPage()" value="next" />-->
-        <!--<input type="button" id="previous" onclick="previousPage()" value="previous" />-->
-        <!--<input type="button" id="last" onclick="lastPage()" value="last" />-->
-    <!--</div>-->
     <div class="actions">
         <button class="check_all_tasks_js">check</button>
         <button class="delete_all_tasks_js">x</button>
@@ -24,13 +17,20 @@
     <ul class="list_tasks_js"></ul>
     <div class="paginate_js"></div>
     <div class="footer">
-        <div class="count_tasks_js"></div>
         <button class="active_tasks_js">active</button>
         <button class="complete_tasks_js">Complete</button>
         <button class="all_tasks_js">All</button>
     </div>
+    <div class="count_tasks_js">Count : 0</div>
 </section>
-<script src="index.js"></script>
-<!--<script src="bla.js"></script>-->
+<script src="script/index.js"></script>
+<script src="script/addNewTask.js"></script>
+<script src="script/paginate.js"></script>
+<script src="script/render.js"></script>
+<script src="script/controller.js"></script>
+<script src="script/deleteTask.js"></script>
+<script src="script/checkTask.js"></script>
+<script src="script/filterList.js"></script>
+<script src="script/clickEventsAndStorage.js"></script>
 </body>
 </html>
