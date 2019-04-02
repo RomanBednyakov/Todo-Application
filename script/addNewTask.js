@@ -18,9 +18,3 @@ NewTask.prototype = {
 };
 const addNewTask = new NewTask();
 
-let MyFunction = function () { this.lastResult };
-MyFunction.prototype = {
-  then: arg => this.lastResult = arg(this.lastResult),
-  resolve: () => console.log(this.lastResult),
-};
-let cloneMyFunction = new MyFunction;
